@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const cors = require("cors");
 const app = express();
@@ -17,8 +18,10 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   const database = client.db("Niche_Products");
-  const ProductsCollection = database.collection("products");
+  const productsCollection = database.collection("products");
   const usersCollection = database.collection("users");
+  const orderCollection = database.collection("order_list");
+  const reviewCollection = database.collection("user_reviews");
 
   try {
     await client.connect();
@@ -45,7 +48,80 @@ const run = async () => {
       res.json(result);
     });
 
-    app.put;
+    // get products
+    app.get("/products", async (req, res) => {
+      const query = await productsCollection.find({}).toArray();
+      res.send(query);
+    });
+
+    // get specific product
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await productsCollection.findOne(query);
+      res.send(product);
+    });
+
+    // set order product
+    app.post("/orders", async (req, res) => {
+      const doc = req.body;
+      const result = await orderCollection.insertOne(doc);
+      res.json(result);
+      console.log(result);
+    });
+
+    // get all orders
+    app.get("/orders", async (req, res) => {
+      const query = await orderCollection.find({}).toArray();
+      res.send(query);
+    });
+
+    // get all orders
+    app.get("/orders/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
+      const query = { email };
+      const orderProduct = await orderCollection.find(query).toArray();
+      console.log(orderProduct);
+      res.send(orderProduct);
+    });
+
+    // delete specific order
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.json(result);
+    });
+
+    // update specific order
+    app.put("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: "shipped",
+        },
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.json(result);
+      console.log(result);
+    });
+
+    // insert user review
+    app.post("/reviews", async (req, res) => {
+      const doc = req.body;
+      const result = await reviewCollection.insertOne(doc);
+      res.json(result);
+      console.log(doc);
+    });
+
+    // get review
+    app.get("/reviews", async (req, res) => {
+      const query = await reviewCollection.find({}).toArray();
+      res.send(query);
+      res.send(query);
+    });
   } finally {
     // await client.close()
   }
