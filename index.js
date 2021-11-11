@@ -54,6 +54,14 @@ const run = async () => {
       res.send(query);
     });
 
+    // insert a product
+    app.post("/products", async (req, res) => {
+      const doc = req.body;
+      const result = await productsCollection.insertOne(doc);
+      res.json(result);
+      console.log(result);
+    });
+
     // get specific product
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
@@ -105,7 +113,6 @@ const run = async () => {
       };
       const result = await orderCollection.updateOne(filter, updateDoc);
       res.json(result);
-      console.log(result);
     });
 
     // insert user review
