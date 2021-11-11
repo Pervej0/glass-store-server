@@ -30,7 +30,7 @@ const run = async () => {
     // update or insert an user
     app.put("/user", async (req, res) => {
       const doc = req.body;
-      const filter = { email: doc.email };
+      const filter = { email: doc.email, displayName: doc.displayName };
       const options = { upsert: true };
       const updateDoc = { $set: filter };
       const result = await usersCollection.updateOne(
@@ -38,7 +38,32 @@ const run = async () => {
         updateDoc,
         options
       );
+      console.log(result);
       res.json(result);
+    });
+
+    // update user roll in admin
+    app.put("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email };
+      const updateDoc = { $set: { roll: "admin" } };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.json(result);
+    });
+
+    // get admin
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      console.log(query);
+      let isAdmin = false;
+      const user = await usersCollection.findOne(query);
+      if (user.roll === "admin") {
+        isAdmin = true;
+      }
+      res.send(isAdmin);
+      console.log(isAdmin);
     });
 
     // insert new user
