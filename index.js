@@ -49,7 +49,7 @@ const run = async () => {
       const result = await usersCollection.updateOne(filter, updateDoc);
       console.log(updateDoc);
       console.log(result);
-      // res.json(result);
+      res.json(result);
     });
 
     // get admin
