@@ -95,6 +95,14 @@ const run = async () => {
       res.send(product);
     });
 
+    // delete a product
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(query);
+      res.json(result);
+    });
+
     // set order product
     app.post("/orders", async (req, res) => {
       const doc = req.body;
@@ -109,7 +117,7 @@ const run = async () => {
       res.send(query);
     });
 
-    // get all orders
+    // get user orders
     app.get("/orders/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
