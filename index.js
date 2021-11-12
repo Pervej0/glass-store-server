@@ -38,18 +38,18 @@ const run = async () => {
         updateDoc,
         options
       );
-      console.log(result);
       res.json(result);
     });
 
-    // update user roll in admin
+    // update user role in admin
     app.put("/admin/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email };
-      const updateDoc = { $set: { roll: "admin" } };
+      const updateDoc = { $set: { role: "admin" } };
       const result = await usersCollection.updateOne(filter, updateDoc);
+      console.log(updateDoc);
       console.log(result);
-      res.json(result);
+      // res.json(result);
     });
 
     // get admin
@@ -59,10 +59,10 @@ const run = async () => {
       console.log(query);
       let isAdmin = false;
       const user = await usersCollection.findOne(query);
-      if (user.roll === "admin") {
+      if (user?.role === "admin") {
         isAdmin = true;
       }
-      res.send(isAdmin);
+      res.json({ admin: isAdmin });
       console.log(isAdmin);
     });
 
@@ -112,7 +112,6 @@ const run = async () => {
     // get all orders
     app.get("/orders/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email);
       const query = { email };
       const orderProduct = await orderCollection.find(query).toArray();
       console.log(orderProduct);
