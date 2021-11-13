@@ -169,7 +169,7 @@ const run = async () => {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Hello Niche Products!");
+  res.send("Welcome to Glass Shop back Wall!");
 });
 
 app.listen(port, () => {
