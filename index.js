@@ -168,7 +168,6 @@ const run = async () => {
     // order payment
     app.post("/create-payment-intent", async (req, res) => {
       const paymentDetails = req.body;
-      console.log(paymentDetails);
       const amount = paymentDetails.totalCost * 100;
       console.log(amount);
 
