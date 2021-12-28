@@ -5,12 +5,14 @@ require("dotenv").config();
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 // middleware
 app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sjbgh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -22,6 +24,7 @@ const run = async () => {
   const usersCollection = database.collection("users");
   const orderCollection = database.collection("order_list");
   const reviewCollection = database.collection("user_reviews");
+  // const orderCheckoutCollection = database.collection("order_checkout");
 
   try {
     await client.connect();
@@ -160,6 +163,23 @@ const run = async () => {
       const query = await reviewCollection.find({}).toArray();
       res.send(query);
       res.send(query);
+    });
+
+    // order payment
+    app.post("/create-payment-intent", async (req, res) => {
+      const paymentDetails = req.body;
+      console.log(paymentDetails);
+      const amount = paymentDetails.totalCost * 100;
+      console.log(amount);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.json({
+        clientSecret: await paymentIntent.client_secret,
+      });
     });
   } finally {
     // await client.close()
