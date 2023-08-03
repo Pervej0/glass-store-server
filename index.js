@@ -125,7 +125,6 @@ const run = async () => {
       const email = req.params.email;
       const query = { email };
       const orderProduct = await orderCollection.find(query).toArray();
-      console.log(orderProduct);
       res.send(orderProduct);
     });
 
@@ -161,7 +160,6 @@ const run = async () => {
     // get review
     app.get("/reviews", async (req, res) => {
       const query = await reviewCollection.find({}).toArray();
-      res.send(query);
       res.send(query);
     });
 
